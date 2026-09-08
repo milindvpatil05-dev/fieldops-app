@@ -5,25 +5,23 @@ import {
   Text,
   TextField,
 } from "@milindvpatil05-dev/react-native-fieldops-ui";
+import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Pressable,
   RefreshControl,
   ScrollView,
   View,
 } from "react-native";
+import { STATUS_OPTIONS, toBadgeStatus } from "../constants/workOrderStatus";
 import { useWorkOrders } from "../hooks/useWorkOrders";
 import type { WorkOrderPriority, WorkOrderStatus } from "../types/workOrder";
 
-type BadgeStatus = "open" | "in-progress" | "blocked" | "done";
-
 const STATUS_FILTERS: { key: WorkOrderStatus | "all"; label: string }[] = [
   { key: "all", label: "All" },
-  { key: "open", label: "Open" },
-  { key: "in_progress", label: "In progress" },
-  { key: "blocked", label: "Blocked" },
-  { key: "done", label: "Done" },
+  ...STATUS_OPTIONS,
 ];
 
 const PRIORITY_OPTIONS: { label: string; value: WorkOrderPriority | "all" }[] = [
@@ -36,11 +34,8 @@ const PRIORITY_OPTIONS: { label: string; value: WorkOrderPriority | "all" }[] = 
 
 const SEARCH_DEBOUNCE_MS = 400;
 
-function toBadgeStatus(status: WorkOrderStatus): BadgeStatus {
-  return status === "in_progress" ? "in-progress" : status;
-}
-
 export default function WorkOrdersScreen() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<WorkOrderStatus | "all">(
@@ -197,7 +192,15 @@ export default function WorkOrdersScreen() {
           )
         }
         renderItem={({ item }) => (
-          <View style={styles.row}>
+          <Pressable
+            style={styles.row}
+            onPress={() =>
+              router.push({
+                pathname: "/work-orders/[id]",
+                params: { id: item.id },
+              })
+            }
+          >
             <View style={styles.rowHeader}>
               <Text variant="label">{item.reference}</Text>
               <Badge status={toBadgeStatus(item.status)} />
@@ -209,7 +212,7 @@ export default function WorkOrdersScreen() {
             <Text variant="caption" color="fg-muted">
               Due {item.dueAt} · {item.assignee?.name ?? "Unassigned"}
             </Text>
-          </View>
+          </Pressable>
         )}
         // Footer only; appended below existing rows so loading more never shifts the list.
         ListFooterComponent={

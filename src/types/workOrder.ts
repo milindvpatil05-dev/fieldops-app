@@ -30,3 +30,17 @@ export interface WorkOrdersFilters {
   assigneeId?: string;
   q?: string;
 }
+
+export interface WorkOrderChecklistItem {
+  id: string;
+  label: string;
+  done: boolean;
+}
+
+// Full record returned by GET /work-orders/:id; the list summary omits these fields.
+export interface WorkOrderDetail extends WorkOrder {
+  description: string;
+  checklist: WorkOrderChecklistItem[];
+  // Optimistic-concurrency token; must be sent back on every status PATCH.
+  version: number;
+}
