@@ -17,7 +17,9 @@ export function useWorkOrder(id: string) {
     queryKey: ["workOrder", id],
     queryFn: async () => {
       // The API wraps every payload as { data: ... }.
-      const res = await api.get<{ data: WorkOrderDetail }>(`/work-orders/${id}`);
+      const res = await api.get<{ data: WorkOrderDetail }>(
+        `/work-orders/${id}`,
+      );
       return res.data.data;
     },
     enabled: Boolean(id),
@@ -46,11 +48,17 @@ export function useUpdateWorkOrderStatus(id: string) {
   >({
     mutationFn: async (status) => {
       // The API uses optimistic concurrency: it rejects the write unless `version` matches its current record.
-      const current = queryClient.getQueryData<WorkOrderDetail>(["workOrder", id]);
-      const res = await api.patch<{ data: WorkOrderDetail }>(`/work-orders/${id}`, {
-        status,
-        version: current?.version,
-      });
+      const current = queryClient.getQueryData<WorkOrderDetail>([
+        "workOrder",
+        id,
+      ]);
+      const res = await api.patch<{ data: WorkOrderDetail }>(
+        `/work-orders/${id}`,
+        {
+          status,
+          version: current?.version,
+        },
+      );
       return res.data.data;
     },
     onMutate: async (status) => {
@@ -67,7 +75,7 @@ export function useUpdateWorkOrderStatus(id: string) {
 
       // Optimistic: reflect the new status immediately, everywhere it appears.
       queryClient.setQueryData<WorkOrderDetail>(["workOrder", id], (old) =>
-        old ? { ...old, status } : old
+        old ? { ...old, status } : old,
       );
       queryClient.setQueriesData<InfiniteData<WorkOrdersPage>>(
         { queryKey: ["workOrders"] },
@@ -77,25 +85,17 @@ export function useUpdateWorkOrderStatus(id: string) {
             pages: old.pages.map((page) => ({
               ...page,
               data: page.data.map((wo) =>
-                wo.id === id ? { ...wo, status } : wo
+                wo.id === id ? { ...wo, status } : wo,
               ),
             })),
-          }
+          },
       );
 
       return { previousDetail, previousLists };
     },
-    // Restore the exact pre-mutation snapshots so the list the user came from never keeps a write that failed.
-    onError: (err, _status, context) => {
-      // A 409 means someone else changed the record first; the response includes the real current state.
-      const serverCurrent =
-        axios.isAxiosError(err) && err.response?.status === 409
-          ? (err.response.data as { current?: WorkOrderDetail })?.current
-          : undefined;
-
-      if (serverCurrent) {
-        queryClient.setQueryData(["workOrder", id], serverCurrent);
-      } else if (context?.previousDetail) {
+    // Restore the exact pre-mutation snapshots so the detail and list never disagree after a failed write.
+    onError: (_err, _status, context) => {
+      if (context?.previousDetail) {
         queryClient.setQueryData(["workOrder", id], context.previousDetail);
       }
       context?.previousLists.forEach(([key, data]) => {

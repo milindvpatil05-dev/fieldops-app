@@ -1,5 +1,6 @@
 import { STATUS_OPTIONS } from "./workOrderStatus";
-import { WorkOrderPriority } from "../enums/workOrder";
+import { ALL_FILTER_VALUE } from "./workOrder";
+import { PRIORITY_FORM_OPTIONS } from "./workOrderForm";
 import type {
   WorkOrderPriorityFilter,
   WorkOrderStatusFilter,
@@ -8,15 +9,12 @@ import type {
 export const STATUS_FILTERS: {
   key: WorkOrderStatusFilter;
   label: string;
-}[] = [{ key: "all", label: "All" }, ...STATUS_OPTIONS];
+}[] = [{ key: ALL_FILTER_VALUE, label: "All" }, ...STATUS_OPTIONS];
 
 export const PRIORITY_OPTIONS: {
   label: string;
   value: WorkOrderPriorityFilter;
 }[] = [
-  { label: "Any priority", value: "all" },
-  { label: "Low", value: WorkOrderPriority.Low },
-  { label: "Medium", value: WorkOrderPriority.Medium },
-  { label: "High", value: WorkOrderPriority.High },
-  { label: "Urgent", value: WorkOrderPriority.Urgent },
+  { label: "Any priority", value: ALL_FILTER_VALUE },
+  ...PRIORITY_FORM_OPTIONS,
 ];

@@ -17,7 +17,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavBar } from "../components/nav-bar";
-import { SEARCH_DEBOUNCE_MS } from "../constants/workOrder";
+import { ALL_FILTER_VALUE, SEARCH_DEBOUNCE_MS } from "../constants/workOrder";
 import {
     PRIORITY_OPTIONS,
     STATUS_FILTERS,
@@ -35,9 +35,9 @@ export default function WorkOrdersScreen() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] =
-    useState<WorkOrderStatusFilter>("all");
+    useState<WorkOrderStatusFilter>(ALL_FILTER_VALUE);
   const [priorityFilter, setPriorityFilter] =
-    useState<WorkOrderPriorityFilter>("all");
+    useState<WorkOrderPriorityFilter>(ALL_FILTER_VALUE);
 
   // Avoid firing a request on every keystroke.
   useEffect(() => {
@@ -50,8 +50,8 @@ export default function WorkOrdersScreen() {
 
   const filters = useMemo(
     () => ({
-      status: statusFilter === "all" ? undefined : statusFilter,
-      priority: priorityFilter === "all" ? undefined : priorityFilter,
+      status: statusFilter === ALL_FILTER_VALUE ? undefined : statusFilter,
+      priority: priorityFilter === ALL_FILTER_VALUE ? undefined : priorityFilter,
       q: debouncedSearch.trim() || undefined,
     }),
     [statusFilter, priorityFilter, debouncedSearch],
@@ -74,13 +74,13 @@ export default function WorkOrdersScreen() {
   );
 
   const hasActiveFilters =
-    statusFilter !== "all" ||
-    priorityFilter !== "all" ||
+    statusFilter !== ALL_FILTER_VALUE ||
+    priorityFilter !== ALL_FILTER_VALUE ||
     debouncedSearch.trim() !== "";
 
   const clearFilters = () => {
-    setStatusFilter("all");
-    setPriorityFilter("all");
+    setStatusFilter(ALL_FILTER_VALUE);
+    setPriorityFilter(ALL_FILTER_VALUE);
     setSearch("");
     setDebouncedSearch("");
   };
