@@ -1,0 +1,37 @@
+export const styles = {
+  safe: { flex: 1, backgroundColor: "#FFFFFF" },
+  container: { padding: 16, gap: 4, paddingBottom: 48 },
+  centered: {
+    flex: 1,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+    gap: 12,
+    padding: 24,
+  },
+  title: { marginBottom: 8 },
+  metaRow: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    gap: 12,
+    marginBottom: 16,
+  },
+  section: {
+    borderTopWidth: 1,
+    borderTopColor: "#E5E7EB",
+    paddingVertical: 16,
+    gap: 8,
+  },
+  sectionLabel: { marginBottom: 4 },
+  infoRow: { flexDirection: "row" as const, gap: 8 },
+  infoLabel: { width: 90 },
+  checklistItem: { paddingVertical: 2 },
+  statusRow: { flexDirection: "row" as const, flexWrap: "wrap" as const, gap: 8 },
+  statusError: {
+    marginTop: 8,
+    gap: 8,
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    justifyContent: "space-between" as const,
+  },
+  edit: { marginTop: 24 },
+};
