@@ -7,6 +7,13 @@ export interface WorkOrderAssignee {
   name: string;
 }
 
+// GET /users — full user record used to populate the assignee picker.
+export interface WorkOrderUser {
+  id: string;
+  name: string;
+  role: "technician" | "supervisor";
+}
+
 export interface WorkOrder {
   id: string;
   reference: string;

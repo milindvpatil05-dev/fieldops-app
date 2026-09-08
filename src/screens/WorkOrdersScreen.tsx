@@ -17,24 +17,27 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavBar } from "../components/nav-bar";
-import { SEARCH_DEBOUNCE_MS } from "../constants/workOrder";
-import { PRIORITY_OPTIONS, STATUS_FILTERS } from "../constants/workOrderFilters";
+import { ALL_FILTER_VALUE, SEARCH_DEBOUNCE_MS } from "../constants/workOrder";
+import {
+    PRIORITY_OPTIONS,
+    STATUS_FILTERS,
+} from "../constants/workOrderFilters";
 import { toBadgeStatus } from "../constants/workOrderStatus";
 import { useWorkOrders } from "../hooks/useWorkOrders";
 import { styles } from "../styles/workOrders.styles";
 import type {
-  WorkOrderPriorityFilter,
-  WorkOrderStatusFilter,
+    WorkOrderPriorityFilter,
+    WorkOrderStatusFilter,
 } from "../types/workOrderFilters";
 
 export default function WorkOrdersScreen() {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<WorkOrderStatusFilter>(
-    "all",
-  );
-  const [priorityFilter, setPriorityFilter] = useState<WorkOrderPriorityFilter>("all");
+  const [statusFilter, setStatusFilter] =
+    useState<WorkOrderStatusFilter>(ALL_FILTER_VALUE);
+  const [priorityFilter, setPriorityFilter] =
+    useState<WorkOrderPriorityFilter>(ALL_FILTER_VALUE);
 
   // Avoid firing a request on every keystroke.
   useEffect(() => {
@@ -47,8 +50,8 @@ export default function WorkOrdersScreen() {
 
   const filters = useMemo(
     () => ({
-      status: statusFilter === "all" ? undefined : statusFilter,
-      priority: priorityFilter === "all" ? undefined : priorityFilter,
+      status: statusFilter === ALL_FILTER_VALUE ? undefined : statusFilter,
+      priority: priorityFilter === ALL_FILTER_VALUE ? undefined : priorityFilter,
       q: debouncedSearch.trim() || undefined,
     }),
     [statusFilter, priorityFilter, debouncedSearch],
@@ -71,13 +74,13 @@ export default function WorkOrdersScreen() {
   );
 
   const hasActiveFilters =
-    statusFilter !== "all" ||
-    priorityFilter !== "all" ||
+    statusFilter !== ALL_FILTER_VALUE ||
+    priorityFilter !== ALL_FILTER_VALUE ||
     debouncedSearch.trim() !== "";
 
   const clearFilters = () => {
-    setStatusFilter("all");
-    setPriorityFilter("all");
+    setStatusFilter(ALL_FILTER_VALUE);
+    setPriorityFilter(ALL_FILTER_VALUE);
     setSearch("");
     setDebouncedSearch("");
   };
@@ -220,7 +223,7 @@ export default function WorkOrdersScreen() {
         <Button
           label="+"
           variant="primary"
-          onPress={() => {}}
+          onPress={() => router.push("/work-orders/new")}
           style={styles.fab}
           textStyle={styles.fabLabel}
         />
@@ -228,4 +231,3 @@ export default function WorkOrdersScreen() {
     </SafeAreaView>
   );
 }
-

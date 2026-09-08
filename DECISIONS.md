@@ -1,25 +1,35 @@
 # Decisions
 
-## Data loading: fetch-by-id vs. passing data from the list screen
+## Scope and delivery
 
-**Chosen: fetch via `GET /work-orders/:id`**, keyed off the `id` route param (`src/app/work-orders/[id].tsx`).
+- The app uses the separately published `@milindvpatil05-dev/react-native-fieldops-ui` package rather than a relative import or copied source. The package ships its Builder Bob output, TypeScript declarations, `prepare` build, NativeWind dependencies, and the five required components.
+- I used GitHub Copilot and other AI-assisted coding tools during development. I reviewed and can defend the resulting architecture and behavior.
+- I cut authentication, offline persistence, background sync, push notifications, settings/profile screens, dark mode, animations, store publishing, CI, and exhaustive tests because they are explicitly out of scope for this assessment.
 
-- The list endpoint (`GET /work-orders`) returns summaries only — no `description` or `checklist`.
-  Passing the tapped row forward would still leave the detail screen without a full record, so a
-  second fetch is unavoidable either way.
-- Route params stay serializable (just an id). The screen works identically whether the user tapped
-  a row or opened `/work-orders/wo_0011` directly (deep link, refresh, browser back/forward).
-- React Query caches the detail under `["workOrder", id]`, so revisiting the same work order within a
-  session is instant without prop-drilling from the list.
+## Component library boundary
 
-## Status change: rollback and retry
+- The app consumes the published package through the npm dependency in `package.json`. This keeps the component-library boundary real and lets a clean clone install the built consumer package without the library source tree.
+- NativeWind styling remains inside the library package. The app consumes component props and semantic variants instead of importing the library's internal tokens or source. This avoids coupling the app to the library build layout at the cost of keeping shared visual decisions expressed through the public component API.
 
-- Status buttons update the cache optimistically in `onMutate` — both the detail query and every cached
-  `["workOrders"]` list page containing this id — so the change feels instant.
-- `onError` restores the exact pre-mutation snapshots captured in `onMutate` for both caches. This is
-  what stops the list the user came from from lying: if the write actually failed, the list row reverts
-  to the same value the detail screen reverts to.
-- **Retry is offered** as a manual button, not automatic retries. The status PATCH sets an absolute
-  value (not a delta), so it's idempotent and safe to resend. Retry is manual rather than automatic so a
-  persistently failing write doesn't loop silently or spam the server — the user sees the failure,
-  understands the previous status was restored, and decides whether to try again.
+## Data Loading
+
+- Work order details are always fetched via `GET /work-orders/:id`, keyed by the `id` route param.
+- The list endpoint (`GET /work-orders`) only returns summaries, so a second fetch is required for full detail.
+- This keeps route params serializable and supports deep links or refreshes.
+- React Query caches detail queries under `["workOrder", id]` for instant revisits.
+
+## Status Updates
+
+- Status changes are applied optimistically in `onMutate` across both detail and list caches.
+- On error, caches are rolled back to pre‑mutation snapshots to avoid inconsistent UI.
+- Retry is manual (button), not automatic, since PATCH is idempotent but failures should be visible to the user.
+
+## Create / Edit Work Orders
+
+- One screen handles both modes: `CreateWorkOrderScreen` with `mode: "create" | "edit"`.
+- Edit mode loads data via `useWorkOrder(id)` and pre‑fills once; background refetches never overwrite in‑progress edits.
+- Server errors (422) map directly to RHF fields; unknown keys show as a banner.
+- Conflicts (409) never discard input. User chooses to retry with their changes or load the latest server version.
+- Checklist `done` flags are preserved in hidden state so edits don’t reset completion.
+- Description field uses prop spreading (`multiline`, `numberOfLines`) to bypass TypeScript excess‑property checks without casting.
+- Keyboard handling uses `KeyboardAvoidingView` and `ScrollView` insets — no extra dependencies, works in Expo Go.

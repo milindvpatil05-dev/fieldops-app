@@ -141,7 +141,14 @@ export default function WorkOrderDetailsScreen({ id }: WorkOrderDetailsScreenPro
           )}
         </View>
 
-        <Button label="Edit" variant="secondary" onPress={() => {}} style={styles.edit} />
+        <Button
+          label="Edit"
+          variant="secondary"
+          onPress={() =>
+            router.push({ pathname: "/work-orders/edit/[id]", params: { id } })
+          }
+          style={styles.edit}
+        />
       </ScrollView>
     </SafeAreaView>
   );
