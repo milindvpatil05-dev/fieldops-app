@@ -1,6 +1,6 @@
-export type WorkOrderStatus = "open" | "in_progress" | "blocked" | "done";
+import type { WorkOrderPriority, WorkOrderStatus } from "../enums/workOrder";
 
-export type WorkOrderPriority = "low" | "medium" | "high" | "urgent";
+export type { WorkOrderPriority, WorkOrderStatus } from "../enums/workOrder";
 
 export interface WorkOrderAssignee {
   id: string;

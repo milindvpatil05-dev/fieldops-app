@@ -6,12 +6,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { NavBar } from "../components/nav-bar";
 import { STATUS_LABEL, STATUS_OPTIONS, toBadgeStatus } from "../constants/workOrderStatus";
 import { useUpdateWorkOrderStatus, useWorkOrder } from "../hooks/useWorkOrder";
+import { styles } from "../styles/workOrderDetails.styles";
+import type { WorkOrderDetailsScreenProps, InfoRowProps } from "../types/workOrderScreen";
 
 function capitalize(value: string) {
   return value ? value.charAt(0).toUpperCase() + value.slice(1) : "";
 }
 
-export default function WorkOrderDetailsScreen({ id }: { id: string }) {
+export default function WorkOrderDetailsScreen({ id }: WorkOrderDetailsScreenProps) {
   const router = useRouter();
   const { data: workOrder, isLoading, isError, error, refetch } = useWorkOrder(id);
   const updateStatus = useUpdateWorkOrderStatus(id);
@@ -145,7 +147,7 @@ export default function WorkOrderDetailsScreen({ id }: { id: string }) {
   );
 }
 
-function InfoRow({ label, value }: { label: string; value: string }) {
+function InfoRow({ label, value }: InfoRowProps) {
   return (
     <View style={styles.infoRow}>
       <Text variant="label" color="fg-muted" style={styles.infoLabel}>
@@ -155,41 +157,3 @@ function InfoRow({ label, value }: { label: string; value: string }) {
     </View>
   );
 }
-
-const styles = {
-  safe: { flex: 1, backgroundColor: "#FFFFFF" },
-  container: { padding: 16, gap: 4, paddingBottom: 48 },
-  centered: {
-    flex: 1,
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
-    gap: 12,
-    padding: 24,
-  },
-  title: { marginBottom: 8 },
-  metaRow: {
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
-    gap: 12,
-    marginBottom: 16,
-  },
-  section: {
-    borderTopWidth: 1,
-    borderTopColor: "#E5E7EB",
-    paddingVertical: 16,
-    gap: 8,
-  },
-  sectionLabel: { marginBottom: 4 },
-  infoRow: { flexDirection: "row" as const, gap: 8 },
-  infoLabel: { width: 90 },
-  checklistItem: { paddingVertical: 2 },
-  statusRow: { flexDirection: "row" as const, flexWrap: "wrap" as const, gap: 8 },
-  statusError: {
-    marginTop: 8,
-    gap: 8,
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
-    justifyContent: "space-between" as const,
-  },
-  edit: { marginTop: 24 },
-};

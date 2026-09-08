@@ -17,36 +17,24 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavBar } from "../components/nav-bar";
-import { STATUS_OPTIONS, toBadgeStatus } from "../constants/workOrderStatus";
+import { SEARCH_DEBOUNCE_MS } from "../constants/workOrder";
+import { PRIORITY_OPTIONS, STATUS_FILTERS } from "../constants/workOrderFilters";
+import { toBadgeStatus } from "../constants/workOrderStatus";
 import { useWorkOrders } from "../hooks/useWorkOrders";
-import type { WorkOrderPriority, WorkOrderStatus } from "../types/workOrder";
-
-const STATUS_FILTERS: { key: WorkOrderStatus | "all"; label: string }[] = [
-  { key: "all", label: "All" },
-  ...STATUS_OPTIONS,
-];
-
-const PRIORITY_OPTIONS: { label: string; value: WorkOrderPriority | "all" }[] =
-  [
-    { label: "Any priority", value: "all" },
-    { label: "Low", value: "low" },
-    { label: "Medium", value: "medium" },
-    { label: "High", value: "high" },
-    { label: "Urgent", value: "urgent" },
-  ];
-
-const SEARCH_DEBOUNCE_MS = 400;
+import { styles } from "../styles/workOrders.styles";
+import type {
+  WorkOrderPriorityFilter,
+  WorkOrderStatusFilter,
+} from "../types/workOrderFilters";
 
 export default function WorkOrdersScreen() {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<WorkOrderStatus | "all">(
+  const [statusFilter, setStatusFilter] = useState<WorkOrderStatusFilter>(
     "all",
   );
-  const [priorityFilter, setPriorityFilter] = useState<
-    WorkOrderPriority | "all"
-  >("all");
+  const [priorityFilter, setPriorityFilter] = useState<WorkOrderPriorityFilter>("all");
 
   // Avoid firing a request on every keystroke.
   useEffect(() => {
@@ -161,7 +149,7 @@ export default function WorkOrdersScreen() {
             options={PRIORITY_OPTIONS}
             value={priorityFilter}
             onChange={(value) =>
-              setPriorityFilter(value as WorkOrderPriority | "all")
+              setPriorityFilter(value as WorkOrderPriorityFilter)
             }
             placeholder="Priority"
           />
@@ -241,48 +229,3 @@ export default function WorkOrdersScreen() {
   );
 }
 
-const styles = {
-  safe: { flex: 1, backgroundColor: "#FFFFFF" },
-  container: { flex: 1 },
-  centered: {
-    flex: 1,
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
-    gap: 12,
-    padding: 24,
-  },
-  search: { marginHorizontal: 16, marginTop: 12, marginBottom: 8 },
-  filterRow: {
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
-    paddingHorizontal: 16,
-    marginBottom: 8,
-    gap: 8,
-  },
-  chipRow: { gap: 8, paddingRight: 8 },
-  listContent: { paddingHorizontal: 16, paddingBottom: 96, flexGrow: 1 },
-  row: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
-    gap: 4,
-  },
-  rowHeader: {
-    flexDirection: "row" as const,
-    justifyContent: "space-between" as const,
-    alignItems: "center" as const,
-  },
-  empty: { alignItems: "center" as const, gap: 8, padding: 24 },
-  footer: { paddingVertical: 16 },
-  fab: {
-    position: "absolute" as const,
-    right: 20,
-    bottom: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
-  },
-  fabLabel: { fontSize: 24, lineHeight: 28 },
-};
