@@ -1,5 +1,16 @@
 # Decisions
 
+## Scope and delivery
+
+- The app uses the separately published `@milindvpatil05-dev/react-native-fieldops-ui` package rather than a relative import or copied source. The package ships its Builder Bob output, TypeScript declarations, `prepare` build, NativeWind dependencies, and the five required components.
+- I used GitHub Copilot and other AI-assisted coding tools during development. I reviewed and can defend the resulting architecture and behavior.
+- I cut authentication, offline persistence, background sync, push notifications, settings/profile screens, dark mode, animations, store publishing, CI, and exhaustive tests because they are explicitly out of scope for this assessment.
+
+## Component library boundary
+
+- The app consumes the published package through the npm dependency in `package.json`. This keeps the component-library boundary real and lets a clean clone install the built consumer package without the library source tree.
+- NativeWind styling remains inside the library package. The app consumes component props and semantic variants instead of importing the library's internal tokens or source. This avoids coupling the app to the library build layout at the cost of keeping shared visual decisions expressed through the public component API.
+
 ## Data Loading
 
 - Work order details are always fetched via `GET /work-orders/:id`, keyed by the `id` route param.

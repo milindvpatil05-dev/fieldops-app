@@ -16,6 +16,8 @@ This is a minimal [Expo](https://expo.dev) app using Expo Router.
    npx expo start
    ```
 
+The app consumes the separately published `@milindvpatil05-dev/react-native-fieldops-ui` package from npm. The package contains the built component-library output and TypeScript declarations; the app does not import library source files. Set the API base URL in `src/constants/api.ts` to the machine running the mock API before launching on a physical device.
+
 In the output, you'll find options to open the app in a
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
@@ -33,6 +35,8 @@ The landing screen is `src/app/index.tsx`.
 - Error, empty, loading, and refresh states covered
 
 ### Development Notes
+
+- The mock API is a separate service. Start it according to its repository README, then update `src/constants/api.ts` when the device cannot reach the default host.
 
 - To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
 - Unit testing: see Unit Testing with Jest ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
